@@ -1,2 +1,2 @@
 # POSCAR-Reader
-This is a way to deal with POSCAR files, which are commonly used for describing crystal structures.
+This is a project to deal with POSCAR files, which are commonly used for describing crystal structures.
