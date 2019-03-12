@@ -1,2 +1,2 @@
-# POSCAR-Reader
-This is a project to deal with POSCAR files, which are commonly used for describing crystal structures.
+# POSCAR/CHGCAR-Reader
+This is a project to deal with POSCAR/CHGCAR files, which are commonly used for describing crystal structures.
