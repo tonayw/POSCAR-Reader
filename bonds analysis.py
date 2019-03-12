@@ -34,7 +34,7 @@ def filereader(filename):
     for i in range(len(names)):
         singleatom=[]
         singleatom.append(names[i])
-        singleatom.append(num_atoms[i])
+        singleatom.append(int(num_atoms[i]))
         atoms.append(singleatom)
     infolist.append(atoms)
     next(f)
@@ -61,8 +61,31 @@ def distance(point1,point2):
     D = np.sqrt((point1[0]-point2[0])**2+(point1[1]-point2[1])**2+(point1[2]-point2[2])**2)
     return D
 
-#def bond_calculator(info_list,lower_bound,upper_bound):
+def bond_calculator(infolist,lower_bound,upper_bound):
+    bondlist = []
+    total_bond = 0
+    for i in range(len(infolist[3])):
+        bondlist.append([])
+    #counting total bond of an atom
+    for i in range(len(infolist[3])):
+        bond_tot = 0
+        for j in range(len(infolist[3])):
+            if i == j:
+                continue
+            else:
+                if lower_bound<=distance(infolist[3][i],infolist[3][j]) and distance(infolist[3][i],infolist[3][j])<=upper_bound:
+                    bond_tot+=1
+                else:
+                    continue
+        #efficient way
+        total_bond+=bond_tot
+        bondlist[i].append(bond_tot)
+    bondlist.append(total_bond)
+    return bondlist
 if __name__ == '__main__':
-    x = filereader("POSCAR-BaTiO3")
+    print(distance([1,2,3],[1,1,1]))
+    x = filereader("POSCAR-Si")
     print(x)
-    
+    y = bond_calculator(x,2.3,2.4)
+    print("Number of total bonds is:")
+    print(y[-1])
