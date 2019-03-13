@@ -18,9 +18,9 @@ def filereader(filename):
     print("name:"+line)
     print("scaling factor:")
     line = f.readline()
+    print(line)
     scalingfactor = float(line)
     infolist.append(scalingfactor)
-    print(line)
     coordinatelist = []
     for i in range (3):
         vectorlist = f.readline().split()#save the vector to a list
@@ -40,7 +40,6 @@ def filereader(filename):
     next(f)
     positionlist = []
     line = f.readline()
-    print(coordinatelist)
     while line:
         linelist = line.split()#linelist contains three original coordinates
         #from the file that gives the position of the atom
@@ -64,8 +63,8 @@ def distance(point1,point2):
 def bond_calculator(infolist,lower_bound,upper_bound):
     bondlist = []
     total_bond = 0
-    for i in range(len(infolist[3])):
-        bondlist.append([])
+    #for i in range(len(infolist[3])):
+        #bondlist.append([])
     #counting total bond of an atom
     for i in range(len(infolist[3])):
         bond_tot = 0
@@ -79,13 +78,35 @@ def bond_calculator(infolist,lower_bound,upper_bound):
                     continue
         #efficient way
         total_bond+=bond_tot
-        bondlist[i].append(bond_tot)
+        bondlist.append(bond_tot)
     bondlist.append(total_bond)
     return bondlist
+
+def histogram_plotter(infolist,bondlist):
+    bondlist_iterator=0 
+    histogram_data = []
+    for i in range(len(infolist[2])):
+        num_bins = 7
+        single_atom_bond = []
+        for j in range(int(infolist[2][i][1])):
+            single_atom_bond.append(bondlist[bondlist_iterator])
+            bondlist_iterator+=1
+        print(single_atom_bond)
+        histogram_data.append(single_atom_bond)
+        n, bins, patches = plt.hist(single_atom_bond, num_bins, facecolor='blue', alpha=0.5)
+        print(single_atom_bond)
+        plt.show()
+    return 0
+
 if __name__ == '__main__':
-    print(distance([1,2,3],[1,1,1]))
-    x = filereader("POSCAR-Si")
+    #x = filereader("POSCAR-Si")
+    #x = filereader("POSCAR-BaTiO3")
+    x = filereader("POSCAR-GST")
     print(x)
-    y = bond_calculator(x,2.3,2.4)
-    print("Number of total bonds is:")
+    #y = bond_calculator(x,2,2.05)
+    #y = bond_calculator(x,2.3,2.4)
+    y = bond_calculator(x,2.5,3.5)
+    print("Total number of bonds is: ")
     print(y[-1])
+    histogram_plotter(x,y)
+    
