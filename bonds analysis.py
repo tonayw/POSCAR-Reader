@@ -10,6 +10,14 @@ The list is of the following form:
 [coordinate of first atom, seocnd atom...](listed in sequence of the atoms above)]
 
 '''
+
+def diagnal(infolist):
+    diagnalv = [0.0,0.0,0.0]
+    for i in range(3):
+        for j in range(3):
+            diagnalv[i]+= infolist[1][i][j]
+    return np.sqrt(diagnalv[0]**2+diagnalv[1]**2+diagnalv[2]**2)
+    
 def filereader(filename):
     infolist = []
     f = open(filename)
@@ -56,6 +64,12 @@ def filereader(filename):
     infolist.append(positionlist)
     return infolist
 
+def coordplus(coord1,coord2):
+    return [coord1[0]+coord2[0],coord1[1]+coord2[1],coord1[2]+coord2[2]]
+
+def coordminus(coord1,coord2):
+    return [coord1[0]-coord2[0],coord1[1]-coord2[1],coord1[2]-coord2[2]]
+
 def distance(point1,point2):
     D = np.sqrt((point1[0]-point2[0])**2+(point1[1]-point2[1])**2+(point1[2]-point2[2])**2)
     return D
@@ -63,6 +77,7 @@ def distance(point1,point2):
 def bond_calculator(infolist,lower_bound,upper_bound):
     bondlist = []
     total_bond = 0
+    criteria = upper_bound-lower_bound
     #for i in range(len(infolist[3])):
         #bondlist.append([])
     #counting total bond of an atom
@@ -72,14 +87,24 @@ def bond_calculator(infolist,lower_bound,upper_bound):
             if i == j:
                 continue
             else:
-                if lower_bound<=distance(infolist[3][i],infolist[3][j]) and distance(infolist[3][i],infolist[3][j])<=upper_bound:
-                    bond_tot+=1
-                else:
-                    continue
+                otheratom = infolist[3][j].copy()
+                adjusted_otheratom = [0,0,0]
+                for x in range(-1,2):
+                    for y in range(-1,2):
+                        for z in range(-1,2): 
+                            adjusted_otheratom[0] = otheratom[0]+infolist[1][0][0]*x+infolist[1][1][0]*y+infolist[1][2][0]*z
+                            adjusted_otheratom[1] = otheratom[1]+infolist[1][0][1]*x+infolist[1][1][1]*y+infolist[1][2][1]*z
+                            adjusted_otheratom[2] = otheratom[2]+infolist[1][0][2]*x+infolist[1][1][2]*y+infolist[1][2][2]*z
+                            if lower_bound<=distance(infolist[3][i],adjusted_otheratom) and upper_bound>=distance(infolist[3][i],adjusted_otheratom):
+                                bond_tot+=1
+                            else:
+                                continue
+                        
+                    
         #efficient way
         total_bond+=bond_tot
         bondlist.append(bond_tot)
-    bondlist.append(total_bond)
+    bondlist.append(total_bond/2)
     return bondlist
 
 def histogram_plotter(infolist,bondlist):
@@ -91,21 +116,19 @@ def histogram_plotter(infolist,bondlist):
         for j in range(int(infolist[2][i][1])):
             single_atom_bond.append(bondlist[bondlist_iterator])
             bondlist_iterator+=1
-        print(single_atom_bond)
         histogram_data.append(single_atom_bond)
         n, bins, patches = plt.hist(single_atom_bond, num_bins, facecolor='blue', alpha=0.5)
-        print(single_atom_bond)
         plt.show()
     return 0
 
 if __name__ == '__main__':
-    #x = filereader("POSCAR-Si")
-    #x = filereader("POSCAR-BaTiO3")
     x = filereader("POSCAR-GST")
+    #x = filereader("POSCAR-BaTiO3")
+    #x = filereader("POSCAR-Si")
     print(x)
     #y = bond_calculator(x,2,2.05)
-    #y = bond_calculator(x,2.3,2.4)
-    y = bond_calculator(x,2.5,3.5)
+    #y = bond_calculator(x,2.3,2.4)#Si
+    y = bond_calculator(x,2.5,3.6)
     print("Total number of bonds is: ")
     print(y[-1])
     histogram_plotter(x,y)
